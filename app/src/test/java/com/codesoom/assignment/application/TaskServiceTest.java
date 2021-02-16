@@ -61,7 +61,27 @@ class TaskServiceTest {
     }
 
     @Test
-    void deleteTask() {
+    void updateTaskWithExistedId() {
+        Task source = new Task();
+        source.setTitle(TASK_TITLE + UPDATE_POSTFIX);
+        taskService.updateTask(1L, source);
+
+        Task task = taskService.getTask(1L);
+
+        assertThat(task.getTitle()).isEqualTo(TASK_TITLE + UPDATE_POSTFIX);
+    }
+
+    @Test
+    void updateTaskNotExistedId() {
+        Task source = new Task();
+        source.setTitle(TASK_TITLE + UPDATE_POSTFIX);
+
+        assertThatThrownBy(() -> taskService.updateTask(100L, source))
+                .isInstanceOf(TaskNotFoundException.class);
+    }
+
+    @Test
+    void deleteTaskWithExistedId() {
         int oldSize = taskService.getTasks().size();
 
         taskService.deleteTask(1L);
@@ -72,13 +92,9 @@ class TaskServiceTest {
     }
 
     @Test
-    void updateTask() {
-        Task source = new Task();
-        source.setTitle(TASK_TITLE + UPDATE_POSTFIX);
-        taskService.updateTask(1L, source);
-
-        Task task = taskService.getTask(1L);
-
-        assertThat(task.getTitle()).isEqualTo(TASK_TITLE + UPDATE_POSTFIX);
+    void deleteTaskWithNotExistedId() {
+        assertThatThrownBy(() -> taskService.deleteTask(100L))
+                .isInstanceOf(TaskNotFoundException.class);
     }
+
 }
